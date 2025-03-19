@@ -119,6 +119,46 @@
                 bar.style.width = `${value * 100}%`;
                 bar.innerText = `${Math.round(value * 100)}%`;
                 
-                bar
+                barContainer.appendChild(label);
+                barContainer.appendChild(bar);
+                probBars.appendChild(barContainer);
+            }
+        }
+        
+        function formatLabel(key) {
+            // Format the label from snake_case to Title Case
+            return key.split('_').map(word => 
+                word.charAt(0).toUpperCase() + word.slice(1)
+            ).join(' ');
+        }
+        
+        function formatValue(key, value) {
+            // Format the value based on the key
+            if (key.includes('mm')) {
+                return `${value.toFixed(1)} mm`;
+            } else if (key.includes('g')) {
+                return `${value.toFixed(0)} g`;
+            }
+            return value;
+        }
+        
+        function setupGuessingGame() {
+            // Update the prediction display after a short delay
+            // This creates a simple reveal effect
+            setTimeout(() => {
+                if (predictionData) {
+                    updatePredictionDisplay(predictionData);
+                }
+            }, 1500);
+        }
+        
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchPrediction();
+            
+            // Refresh data every 5 minutes
+            setInterval(fetchPrediction, 5 * 60 * 1000);
+        });
+    </script>
 </body>
 </html>
