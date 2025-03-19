@@ -39,7 +39,7 @@ def predict_species(penguin_data):
         
         # Make prediction
         prediction = model.predict(scaled_features)[0]
-        decision_scores = model.decision_function(scaled_features)
+        proba = model.predict_proba(scaled_features)[0]  # Changed variable name for clarity
         
         # Get class names
         classes = model.classes_
@@ -47,7 +47,7 @@ def predict_species(penguin_data):
         # Create results dictionary
         result = {
             'predicted_species': prediction,
-            'probabilities': {cls: float(prob) for cls, prob in zip(classes, probabilities)},
+            'probabilities': {cls: float(prob) for cls, prob in zip(classes, proba)},
             'penguin_data': penguin_data,
             'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         }
