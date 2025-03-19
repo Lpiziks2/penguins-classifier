@@ -19,6 +19,9 @@ def fetch_new_penguin():
 def predict_species(penguin_data):
     """Predict the species of a penguin using the trained model."""
     try:
+        # Define species mapping (adjust based on your dataset)
+        species_mapping = {0: "Adelie", 1: "Chinstrap", 2: "Gentoo"}
+        
         # Load the trained model
         model_pipeline = joblib.load('models/penguin_classifier.joblib')
         
@@ -36,6 +39,9 @@ def predict_species(penguin_data):
         # Make prediction
         prediction = model.predict(df_scaled)[0]
         
+        # Convert prediction to species name
+        predicted_species = species_mapping.get(int(prediction), "Unknown")
+        
         # Get prediction probabilities
         probabilities = {}
         if hasattr(model, 'predict_proba'):
@@ -47,7 +53,8 @@ def predict_species(penguin_data):
         
         # Create a structured result
         result = {
-            'predicted_species': int(prediction),
+            'predicted_species_id': int(prediction),
+            'predicted_species': predicted_species,
             'probabilities': probabilities,
             'penguin_data': penguin_data,
             'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
