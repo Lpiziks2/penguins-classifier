@@ -30,5 +30,21 @@
       "datetime": "2025-04-07T07:59:00+00:00"
     },
     "timestamp": "2025-03-19 15:50:43"
+  },
+  {
+    "predicted_species": 2,
+    "probabilities": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 1.0
+    },
+    "penguin_data": {
+      "bill_length_mm": 46.27701917967353,
+      "bill_depth_mm": 13.796159907237413,
+      "flipper_length_mm": 214.25917180221953,
+      "body_mass_g": 4900.733949469735,
+      "datetime": "2025-03-19T07:59:00+00:00"
+    },
+    "timestamp": "2025-03-19 20:05:22"
   }
 ]
