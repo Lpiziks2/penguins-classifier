@@ -24,7 +24,7 @@ jobs:
         pip install -r requirements.txt
 
     - name: Run Prediction Script
-      run: python scripts/prediction.py
+      run: python scripts/04_prediction_service.py
 
     - name: Commit and Push Updated Predictions
       run: |
