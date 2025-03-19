@@ -3,110 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Penguin Species Prediction</title>
+    <title>Penguins of Madagascar Classifier</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             padding: 20px;
             background-color: #f8f9fa;
         }
-        .container {
-            max-width: 700px;
-            margin: auto;
-        }
-        .card {
+        .prediction-card {
+            margin-bottom: 20px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
-        .species-name {
-            font-size: 24px;
-            font-weight: bold;
+        .history-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
         }
-        .timestamp {
-            font-size: 14px;
-            color: gray;
+        .adelie {
+            background-color: #d4edda;
+        }
+        .chinstrap {
+            background-color: #d1ecf1;
+        }
+        .gentoo {
+            background-color: #fff3cd;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1 class="text-center">Penguin Species Prediction</h1>
-        <p class="text-center">Latest prediction based on penguin measurements.</p>
-
-        <div class="card mb-3">
-            <div class="card-header bg-primary text-white">
-                <h3>Latest Prediction</h3>
+        <h1 class="text-center my-4">Penguins of Madagascar Classifier</h1>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card prediction-card">
+                    <div class="card-header bg-primary text-white">
+                        <h3>Latest Prediction</h3>
+                    </div>
+                    <div class="card-body">
+                        <h4>Species: <span class="badge bg-success">Gentoo</span></h4>
+                        <p>Timestamp: 2025-03-19 14:54:04</p>
+                        
+                        <h5>Measurement Data:</h5>
+                        <ul class="list-group mb-3">
+                            <li class="list-group-item">Bill Length: 44.02125281740061 mm</li>
+                            <li class="list-group-item">Bill Depth: 17.225737253195568 mm</li>
+                            <li class="list-group-item">Flipper Length: 199.79517940983658 mm</li>
+                            <li class="list-group-item">Body Mass: 5374.903946706848 g</li>
+                        </ul>
+                        
+                        <h5>Prediction Confidence:</h5>
+                        <div class="progress mb-1">
+                            <div class="progress-bar bg-success" role="progressbar" 
+                                 style="width: 0.0%" 
+                                 aria-valuenow="0.0" aria-valuemin="0" aria-valuemax="100">
+                                Adelie: 0.0%
+                            </div>
+                        </div>
+                        <div class="progress mb-1">
+                            <div class="progress-bar bg-info" role="progressbar" 
+                                 style="width: 0.0%" 
+                                 aria-valuenow="0.0" aria-valuemin="0" aria-valuemax="100">
+                                Chinstrap: 0.0%
+                            </div>
+                        </div>
+                        <div class="progress mb-1">
+                            <div class="progress-bar bg-warning" role="progressbar" 
+                                 style="width: 100.0%" 
+                                 aria-valuenow="100.0" aria-valuemin="0" aria-valuemax="100">
+                                Gentoo: 100.0%
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <h4 class="species-name" id="predicted_species">Loading...</h4>
-                <p class="timestamp" id="timestamp"></p>
-                <h5>Measurement Data:</h5>
-                <ul class="list-group">
-                    <li class="list-group-item">Bill Length: <span id="bill_length">Loading...</span> mm</li>
-                    <li class="list-group-item">Bill Depth: <span id="bill_depth">Loading...</span> mm</li>
-                    <li class="list-group-item">Flipper Length: <span id="flipper_length">Loading...</span> mm</li>
-                    <li class="list-group-item">Body Mass: <span id="body_mass">Loading...</span> g</li>
-                </ul>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-secondary text-white">
+                        <h3>Recent Predictions</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="history-container">
+                            <div class="history-item gentoo">
+                                <strong>Species:</strong> Gentoo 
+                                <strong>Time:</strong> 2025-03-19 14:54:04
+                                <br>
+                                <small>Bill: 44.02125281740061mm × 17.225737253195568mm, 
+                                Flipper: 199.79517940983658mm, 
+                                Mass: 5374.903946706848g</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-
-        <div class="card">
-            <div class="card-header bg-secondary text-white">
-                <h3>Prediction History</h3>
-            </div>
-            <div class="card-body" id="history">
-                <p>Loading history...</p>
+        
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <h3>About the Project</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>This is a classifier that predicts penguin species based on physical measurements. The goal is to find Skipper, Private, Rico, and Kowalski from the Penguins of Madagascar, who are Adelie penguins.</p>
+                        <p>New penguin data is fetched daily at 7:30 AM from the API, and predictions are updated on this page.</p>
+                        <p>Last updated: 2025-03-19 14:54:04</p>
+                    </div>
+                </div>
             </div>
         </div>
-
-        <footer class="text-center mt-4">
-            <p>Predictions are updated daily at 7:30 AM UTC.</p>
-        </footer>
     </div>
-
-    <script>
-        async function loadPrediction() {
-            try {
-                const response = await fetch('latest_prediction.json');
-                const data = await response.json();
-
-                document.getElementById('predicted_species').textContent = data.predicted_species || "Unknown";
-                document.getElementById('timestamp').textContent = "Predicted at: " + (data.timestamp || "N/A");
-                document.getElementById('bill_length').textContent = data.penguin_data?.bill_length_mm || "N/A";
-                document.getElementById('bill_depth').textContent = data.penguin_data?.bill_depth_mm || "N/A";
-                document.getElementById('flipper_length').textContent = data.penguin_data?.flipper_length_mm || "N/A";
-                document.getElementById('body_mass').textContent = data.penguin_data?.body_mass_g || "N/A";
-            } catch (error) {
-                console.error("Error loading latest prediction:", error);
-            }
-        }
-
-        async function loadHistory() {
-            try {
-                const response = await fetch('prediction_history.json');
-                const history = await response.json();
-                const historyDiv = document.getElementById('history');
-                
-                historyDiv.innerHTML = ""; // Clear existing content
-
-                history.slice(-10).reverse().forEach(prediction => {
-                    const div = document.createElement('div');
-                    div.classList.add('history-item', 'p-2', 'mb-2', 'border', 'rounded');
-                    div.innerHTML = `<strong>${prediction.predicted_species}</strong> - ${prediction.timestamp}`;
-                    historyDiv.appendChild(div);
-                });
-
-                if (history.length === 0) {
-                    historyDiv.innerHTML = "<p>No past predictions available.</p>";
-                }
-            } catch (error) {
-                console.error("Error loading prediction history:", error);
-            }
-        }
-
-        loadPrediction();
-        loadHistory();
-    </script>
-
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
