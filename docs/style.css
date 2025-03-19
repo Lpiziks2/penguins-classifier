@@ -123,6 +123,99 @@ h1::before {
   transition: all 0.4s ease;
   max-width: 500px;
   border: 1px solid rgba(168, 216, 234, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+#prediction-box::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 100px;
+  height: 100px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  filter: blur(20px);
+  z-index: 0;
+  animation: floatBubble 8s infinite ease-in-out;
+}
+
+@keyframes floatBubble {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-30px, 30px); }
+}
+
+.loading-animation {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  border: 5px solid var(--ice-blue);
+  border-radius: 50%;
+  border-top-color: var(--penguin-orange);
+  animation: spin 1s ease-in-out infinite;
+  margin: 10px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.species-icon {
+  font-size: 2em;
+  display: inline-block;
+  margin-right: 10px;
+  animation: bounce 2s infinite ease-in-out;
+  vertical-align: middle;
+}
+
+.species-tagline {
+  display: block;
+  font-size: 0.7em;
+  margin-top: 8px;
+  font-style: italic;
+  color: #666;
+  animation: fadeIn 1s ease-in-out forwards;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Species-specific icon animations */
+.species-icon.adelie {
+  animation: adelieBounce 2s infinite ease-in-out;
+}
+
+.species-icon.chinstrap {
+  animation: chinStrapSpin 3s infinite ease-in-out;
+}
+
+.species-icon.gentoo {
+  animation: gentooWave 2.5s infinite ease-in-out;
+}
+
+@keyframes adelieBounce {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  30% { transform: translateY(-15px) rotate(-10deg); }
+  60% { transform: translateY(0) rotate(10deg); }
+}
+
+@keyframes chinStrapSpin {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px) rotate(15deg); }
+}
+
+@keyframes gentooWave {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-5px) rotate(15deg); }
+  75% { transform: translateY(-5px) rotate(-15deg); }
 }
 
 #prediction-box:hover {
@@ -134,14 +227,65 @@ h1::before {
   font-size: 28px;
   font-weight: bold;
   color: var(--deep-blue);
-  padding: 18px;
-  border-radius: 10px;
+  padding: 18px 25px;
+  border-radius: 15px;
   background-color: var(--penguin-white);
   display: inline-block;
-  margin: 10px 0;
-  transition: all 0.3s ease;
+  margin: 15px 0;
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   border-left: 5px solid var(--penguin-orange);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+  transform-origin: center;
+  animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.species::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 50%);
+  z-index: 1;
+}
+
+.species strong {
+  position: relative;
+  z-index: 2;
+}
+
+/* Species-specific styling */
+.species:has(strong:contains('Adelie')) {
+  border-left: 5px solid var(--adelie-blue);
+  box-shadow: 0 8px 20px rgba(52, 152, 219, 0.2);
+  animation: adelieWiggle 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.species:has(strong:contains('Chinstrap')) {
+  border-left: 5px solid var(--chinstrap-purple);
+  box-shadow: 0 8px 20px rgba(155, 89, 182, 0.2);
+}
+
+.species:has(strong:contains('Gentoo')) {
+  border-left: 5px solid var(--gentoo-green);
+  box-shadow: 0 8px 20px rgba(46, 204, 113, 0.2);
+}
+
+@keyframes adelieWiggle {
+  0% { transform: scale(0.8); opacity: 0; }
+  40% { transform: scale(1.05) rotate(2deg); }
+  60% { transform: scale(1.05) rotate(-2deg); }
+  80% { transform: scale(1.05) rotate(1deg); }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 .timestamp {
