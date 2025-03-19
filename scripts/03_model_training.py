@@ -22,89 +22,35 @@ def load_data_from_db():
     return df
 
 def preprocess_data(df):
-    """Preprocess data: encode categorical features, handle missing values, and scale."""
-    
-    # Encode target variable (species)
-    le = LabelEncoder()
-    df['species'] = le.fit_transform(df['species'])
-    
-    # Separate features and target
+    """Preprocess data: encode target variable and scale numerical features."""
+    df['species'] = LabelEncoder().fit_transform(df['species'])
     X = df.drop(columns=['species'])
     y = df['species']
-    
-    # Scale numerical features
     scaler = StandardScaler()
     X = pd.DataFrame(scaler.fit_transform(X), columns=X.columns)
-    
     return X, y, scaler
 
-def analyze_features():
-    """Analyze and select the most important features using multiple methods with cross-validation."""
+def train_and_save_model():
+    """Train model, evaluate features, and save the trained model."""
     print("Loading and preprocessing data...")
     df = load_data_from_db()
     X, y, scaler = preprocess_data(df)
     
-    # 1. Filter Method - ANOVA F-test
-    print("\n1. ANOVA F-test for Feature Selection")
-    selector = SelectKBest(f_classif, k='all')
-    selector.fit(X, y)
-    
-    feature_scores = pd.DataFrame({
-        'Feature': X.columns,
-        'F_Score': selector.scores_,
-        'P_Value': selector.pvalues_
-    }).sort_values('F_Score', ascending=False)
-    
-    print(feature_scores)
-
-    # 2. Embedded Method - Random Forest Feature Importance (Cross-validated)
-    print("\n2. Random Forest Feature Importance (Cross-validated)")
+    print("\nTraining Random Forest Classifier...")
     rf = RandomForestClassifier(n_estimators=100, random_state=42)
-    
     skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
-    rf_scores = cross_val_score(rf, X, y, cv=skf, scoring='accuracy')
+    accuracy = cross_val_score(rf, X, y, cv=skf, scoring='accuracy')
     
-    print(f"Random Forest Cross-validation Accuracy: {np.mean(rf_scores):.4f} ± {np.std(rf_scores):.4f}")
-    
+    print(f"Cross-validation Accuracy: {np.mean(accuracy):.4f} ± {np.std(accuracy):.4f}")
     rf.fit(X, y)
-    feature_importance = pd.DataFrame({
-        'Feature': X.columns,
-        'Importance': rf.feature_importances_
-    }).sort_values('Importance', ascending=False)
     
-    print(feature_importance)
+    print("\nFeature Importance:")
+    feature_importance = pd.DataFrame({'Feature': X.columns, 'Importance': rf.feature_importances_})
+    print(feature_importance.sort_values('Importance', ascending=False))
     
-    # 3. Permutation Importance
-    print("\n3. Permutation Importance")
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
-    
-    rf.fit(X_train, y_train)
-    result = permutation_importance(rf, X_test, y_test, n_repeats=10, random_state=42)
-    
-    perm_importance = pd.DataFrame({
-        'Feature': X.columns,
-        'Importance': result.importances_mean
-    }).sort_values('Importance', ascending=False)
-    
-    print(perm_importance)
-    
-    # Save the trained model
     os.makedirs('models', exist_ok=True)
-    model_pipeline = {
-        'model': rf,
-        'scaler': scaler,
-        'features': X.columns.tolist()
-    }
-    joblib.dump(model_pipeline, 'models/penguin_classifier.joblib')
+    joblib.dump({'model': rf, 'scaler': scaler, 'features': X.columns.tolist()}, 'models/penguin_classifier.joblib')
     print("Model saved successfully in 'models/penguin_classifier.joblib'")
-    
-    # Final feature selection based on importance
-    selected_features = feature_importance.head(4)['Feature'].tolist()
-    
-    print(f"\nFinal selected features for model training: {selected_features}")
-    
-    return selected_features
 
 if __name__ == "__main__":
-    selected_features = analyze_features()
-    print(f"\nSelected features for model training: {selected_features}")
+    train_and_save_model()
