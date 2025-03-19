@@ -30,28 +30,24 @@ def predict_species(penguin_data):
         # Convert the input data into a DataFrame
         df = pd.DataFrame([{feature: penguin_data.get(feature, None) for feature in features}])
         
-        # Handle missing values (if needed)
-        if df.isnull().values.any():
-            print("Warning: Missing values detected in input data. Prediction may be affected.")
-        
         # Scale the features
-        scaled_features = scaler.transform(df)
+        df_scaled = scaler.transform(df)
         
         # Make prediction
-        prediction = model.predict(scaled_features)[0]
+        prediction = model.predict(df_scaled)[0]
         
         # Get prediction probabilities
         probabilities = {}
         if hasattr(model, 'predict_proba'):
-            proba = model.predict_proba(scaled_features)[0]
+            proba = model.predict_proba(df_scaled)[0]
             classes = model.classes_
-            probabilities = {cls: float(prob) for cls, prob in zip(classes, proba)}
+            probabilities = {int(cls): float(prob) for cls, prob in zip(classes, proba)}
         else:
-            probabilities = {prediction: 1.0}  # Assign full probability to predicted class
+            probabilities = {int(prediction): 1.0}  # Assign full probability to predicted class
         
         # Create a structured result
         result = {
-            'predicted_species': prediction,
+            'predicted_species': int(prediction),
             'probabilities': probabilities,
             'penguin_data': penguin_data,
             'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
