@@ -39,15 +39,22 @@ def predict_species(penguin_data):
         
         # Make prediction
         prediction = model.predict(scaled_features)[0]
-        proba = model.predict_proba(scaled_features)[0]  # Changed variable name for clarity
         
-        # Get class names
-        classes = model.classes_
+        # Check if the model has predict_proba
+        if hasattr(model, 'predict_proba'):
+            proba = model.predict_proba(scaled_features)[0]
+            classes = model.classes_
+            probabilities = {cls: float(prob) for cls, prob in zip(classes, proba)}
+        else:
+            # If model doesn't support probabilities, use a dummy approach
+            classes = model.classes_
+            # Set 1.0 for the predicted class, 0.0 for others
+            probabilities = {cls: 1.0 if cls == prediction else 0.0 for cls in classes}
         
         # Create results dictionary
         result = {
             'predicted_species': prediction,
-            'probabilities': {cls: float(prob) for cls, prob in zip(classes, proba)},
+            'probabilities': probabilities,
             'penguin_data': penguin_data,
             'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         }
