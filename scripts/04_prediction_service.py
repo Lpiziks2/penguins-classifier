@@ -39,7 +39,7 @@ def predict_species(penguin_data):
         
         # Make prediction
         prediction = model.predict(scaled_features)[0]
-        probabilities = model.predict_proba(scaled_features)[0]
+        decision_scores = model.decision_function(scaled_features)
         
         # Get class names
         classes = model.classes_
