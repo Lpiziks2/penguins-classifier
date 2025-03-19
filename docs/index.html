@@ -36,104 +36,89 @@
     </div>
 
     <script>
+        let predictionData = null;
+        
         async function fetchPrediction() {
             try {
                 const response = await fetch('latest_prediction.json');
                 if (!response.ok) {
                     throw new Error("Failed to fetch prediction.");
                 }
-                const data = await response.json();
+                predictionData = await response.json();
                 
-                // Update prediction and remove loading class
-                const predictionEl = document.getElementById('prediction');
-                predictionEl.innerText = `Species: ${data.predicted_species}`;
-                predictionEl.classList.remove('loading');
+                // Update penguin data immediately
+                updatePenguinData(predictionData);
                 
-                // Update timestamp
-                document.getElementById('timestamp').innerText = `Last updated: ${data.timestamp}`;
+                // Set up the guessing game
+                setupGuessingGame();
                 
-                // Update penguin data
-                const dataGrid = document.getElementById('data-grid');
-                dataGrid.innerHTML = '';
-                
-                for (const [key, value] of Object.entries(data.penguin_data)) {
-                    if (key !== 'datetime') {
-                        const dataItem = document.createElement('div');
-                        dataItem.className = 'data-item';
-                        
-                        const label = document.createElement('div');
-                        label.className = 'data-label';
-                        label.innerText = formatLabel(key);
-                        
-                        const dataValue = document.createElement('div');
-                        dataValue.className = 'data-value';
-                        dataValue.innerText = formatValue(key, value);
-                        
-                        dataItem.appendChild(label);
-                        dataItem.appendChild(dataValue);
-                        dataGrid.appendChild(dataItem);
-                    }
-                }
-                
-                // Update probability bars
-                const probBars = document.getElementById('prob-bars');
-                probBars.innerHTML = '';
-                
-                const speciesMap = {
-                    '0': 'Adelie',
-                    '1': 'Chinstrap',
-                    '2': 'Gentoo'
-                };
-                
-                for (const [key, value] of Object.entries(data.probabilities)) {
-                    const species = speciesMap[key] || key;
-                    
-                    const barContainer = document.createElement('div');
-                    barContainer.className = 'prob-bar-container';
-                    
-                    const label = document.createElement('div');
-                    label.className = 'data-label';
-                    label.innerText = species;
-                    
-                    const bar = document.createElement('div');
-                    bar.className = `prob-bar prob-${species.toLowerCase()}`;
-                    bar.style.width = `${value * 100}%`;
-                    bar.innerText = `${Math.round(value * 100)}%`;
-                    
-                    barContainer.appendChild(bar);
-                    
-                    const barWrapper = document.createElement('div');
-                    barWrapper.appendChild(label);
-                    barWrapper.appendChild(barContainer);
-                    
-                    probBars.appendChild(barWrapper);
-                }
-                
+                return predictionData;
             } catch (error) {
                 document.getElementById('prediction').innerText = 'Error loading prediction.';
                 document.getElementById('timestamp').innerText = '';
+                return null;
             }
         }
         
-        function formatLabel(key) {
-            return key.split('_').map(word => 
-                word.charAt(0).toUpperCase() + word.slice(1)
-            ).join(' ');
-        }
-        
-        function formatValue(key, value) {
-            if (key.includes('mm')) {
-                return `${value.toFixed(1)} mm`;
-            } else if (key.includes('g')) {
-                return `${value.toFixed(0)} g`;
+        function updatePenguinData(data) {
+            // Update penguin data
+            const dataGrid = document.getElementById('data-grid');
+            dataGrid.innerHTML = '';
+            
+            for (const [key, value] of Object.entries(data.penguin_data)) {
+                if (key !== 'datetime') {
+                    const dataItem = document.createElement('div');
+                    dataItem.className = 'data-item';
+                    
+                    const label = document.createElement('div');
+                    label.className = 'data-label';
+                    label.innerText = formatLabel(key);
+                    
+                    const dataValue = document.createElement('div');
+                    dataValue.className = 'data-value';
+                    dataValue.innerText = formatValue(key, value);
+                    
+                    dataItem.appendChild(label);
+                    dataItem.appendChild(dataValue);
+                    dataGrid.appendChild(dataItem);
+                }
             }
-            return value;
         }
-
-        fetchPrediction();
         
-        // Auto-refresh prediction every 30 seconds
-        setInterval(fetchPrediction, 30000);
-    </script>
+        function updatePredictionDisplay(data) {
+            // Update prediction and remove loading class
+            const predictionEl = document.getElementById('prediction');
+            predictionEl.innerText = `Species: ${data.predicted_species}`;
+            predictionEl.classList.remove('loading');
+            
+            // Update timestamp
+            document.getElementById('timestamp').innerText = `Last updated: ${data.timestamp}`;
+            
+            // Update probability bars
+            const probBars = document.getElementById('prob-bars');
+            probBars.innerHTML = '';
+            
+            const speciesMap = {
+                '0': 'Adelie',
+                '1': 'Chinstrap',
+                '2': 'Gentoo'
+            };
+            
+            for (const [key, value] of Object.entries(data.probabilities)) {
+                const species = speciesMap[key] || key;
+                
+                const barContainer = document.createElement('div');
+                barContainer.className = 'prob-bar-container';
+                
+                const label = document.createElement('div');
+                label.className = 'data-label';
+                label.innerText = species;
+                
+                const bar = document.createElement('div');
+                bar.className = `prob-bar prob-${species.toLowerCase()}`;
+                bar.style.width = `${value * 100}%`;
+                bar.innerText = `${Math.round(value * 100)}%`;
+                
+                bar
 </body>
 </html>
