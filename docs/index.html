@@ -48,15 +48,25 @@
                 const predictionEl = document.getElementById('prediction');
                 
                 // Make the prediction display more fun with conditional messages
-                if (data.predicted_species === 'Adelie') {
-                    predictionEl.innerHTML = `✅ <strong>Adelie Penguin Found!</strong> Skipper, is that you? 🐧🎉`;
-                } else if (data.predicted_species === 'Chinstrap') {
-                    predictionEl.innerHTML = `❌ <strong>Chinstrap Penguin Detected!</strong> Wrong squad... 😅`;
-                } else if (data.predicted_species === 'Gentoo') {
-                    predictionEl.innerHTML = `❓ <strong>Gentoo Penguin Spotted!</strong> Private, is that your cousin? 🧐`;
-                } else {
-                    predictionEl.innerHTML = `Species: ${data.predicted_species}`;
-                }
+                // Add a loading animation before showing the result
+                predictionEl.innerHTML = `<div class="loading-animation"></div>`;
+                
+                // Delay the result to show the loading animation
+                setTimeout(() => {
+                    if (data.predicted_species === 'Adelie') {
+                        predictionEl.innerHTML = `<div class="species-icon adelie">🐧</div> <strong>Adelie Penguin Found!</strong> <div class="species-tagline">Skipper, is that you? 🎖️</div>`;
+                        predictionEl.className = 'species adelie';
+                    } else if (data.predicted_species === 'Chinstrap') {
+                        predictionEl.innerHTML = `<div class="species-icon chinstrap">🐧</div> <strong>Chinstrap Penguin Detected!</strong> <div class="species-tagline">Rico, what's that explosive device? 💣</div>`;
+                        predictionEl.className = 'species chinstrap';
+                    } else if (data.predicted_species === 'Gentoo') {
+                        predictionEl.innerHTML = `<div class="species-icon gentoo">🐧</div> <strong>Gentoo Penguin Spotted!</strong> <div class="species-tagline">Kowalski, analysis! 🔍</div>`;
+                        predictionEl.className = 'species gentoo';
+                    } else {
+                        predictionEl.innerHTML = `<div class="species-icon">🐧</div> <strong>Species: ${data.predicted_species}</strong>`;
+                        predictionEl.className = 'species';
+                    }
+                }, 800);
                 
                 predictionEl.classList.remove('loading');
                 
