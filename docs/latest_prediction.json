@@ -1,17 +1,17 @@
 {
-  "predicted_species_id": 2,
-  "predicted_species": "Gentoo",
+  "predicted_species_id": 0,
+  "predicted_species": "Adelie",
   "probabilities": {
-    "0": 0.0,
-    "1": 0.0,
-    "2": 1.0
+    "0": 0.98,
+    "1": 0.02,
+    "2": 0.0
   },
   "penguin_data": {
-    "bill_length_mm": 46.27701917967353,
-    "bill_depth_mm": 13.796159907237413,
-    "flipper_length_mm": 214.25917180221953,
-    "body_mass_g": 4900.733949469735,
-    "datetime": "2025-03-19T07:59:00+00:00"
+    "bill_length_mm": 37.49674160932227,
+    "bill_depth_mm": 19.552948464630344,
+    "flipper_length_mm": 194.13346720834585,
+    "body_mass_g": 2908.216536400228,
+    "datetime": "2025-03-20T07:59:00+00:00"
   },
-  "timestamp": "2025-03-19 20:39:14"
+  "timestamp": "2025-03-20 07:16:18"
 }
