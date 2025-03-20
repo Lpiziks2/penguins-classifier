@@ -10,7 +10,7 @@ def fetch_new_penguin():
     url = "http://130.225.39.127:8000/new_penguin/"
     try:
         response = requests.get(url)
-        response.raise_for_status()  # Raise error for bad responses
+        response.raise_for_status() 
         return response.json()
     except requests.exceptions.RequestException as e:
         print(f"Error fetching penguin data: {e}")
@@ -19,7 +19,7 @@ def fetch_new_penguin():
 def predict_species(penguin_data):
     """Predict the species of a penguin using the trained model."""
     try:
-        # Define species mapping (adjust based on your dataset)
+        # Defines species mapping 
         species_mapping = {0: "Adelie", 1: "Chinstrap", 2: "Gentoo"}
         
         # Load the trained model
@@ -30,7 +30,7 @@ def predict_species(penguin_data):
         model = model_pipeline['model']
         features = model_pipeline['features']
         
-        # Convert the input data into a DataFrame
+        # Convert the input data into a df
         df = pd.DataFrame([{feature: penguin_data.get(feature, None) for feature in features}])
         
         # Scale the features
