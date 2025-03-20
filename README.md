@@ -12,9 +12,8 @@ This project uses the Palmer Penguins dataset to build a classifier that can ide
 - Prediction service that fetches new penguin data from an API
 - Web visualization of predictions
 
-You can view the latest predictions on the live page:  
-[Penguins Classifier](https://lpiziks2.github.io/penguins-classifier/)
-
+##  Live Predictions  
+### 👉 **[Penguins Classifier](https://lpiziks2.github.io/penguins-classifier/)** 👈
 
 ## Installation
 
