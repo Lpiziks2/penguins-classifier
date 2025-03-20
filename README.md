@@ -16,7 +16,7 @@ This project uses the Palmer Penguins dataset to build a classifier that can ide
 
 ```bash
 # Clone the repository
-git clone 
+git clone https://github.com/Lpiziks2/penguins-classifier.git
 cd penguins-classifier
 
 # Install dependencies
