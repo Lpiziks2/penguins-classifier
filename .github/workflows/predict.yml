@@ -1,7 +1,7 @@
 name: Automated Penguin Prediction
 on:
   schedule:
-    - cron: '30 7 * * *'  # Runs daily at 07:30 AM UTC
+    - cron: '*/1 * * * *'  # Runs every minute
   workflow_dispatch:  # Allows manual triggering
 
 jobs:
