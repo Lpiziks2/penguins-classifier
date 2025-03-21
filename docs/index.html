@@ -6,9 +6,27 @@
     <title>Penguin Prediction</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <meta name="description" content="Penguins of Madagascar Classifier - Predict penguin species based on measurements">
 </head>
 <body>
-    <div class="container">
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <button id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark/light mode">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="theme-icon light-icon">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="theme-icon dark-icon">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+    </button>
+    <div class="container" id="main-content" role="main">
         <h1>Penguins of Madagascar Classifier</h1>
         <p class="prediction-title">Latest Penguin Species Prediction:</p>
         
@@ -21,26 +39,26 @@
         <!-- Dashboard Grid Layout -->
         <div class="dashboard-grid">
             <!-- Penguin Data Section -->
-            <div id="penguin-data">
-                <h3>Penguin Measurements</h3>
-                <div class="data-grid" id="data-grid">
+            <div id="penguin-data" role="region" aria-labelledby="penguin-data-title">
+                <h3 id="penguin-data-title">Penguin Measurements</h3>
+                <div class="data-grid" id="data-grid" aria-live="polite">
                     <!-- Data will be populated by JavaScript -->
                 </div>
             </div>
             
             <!-- Probability Chart Section -->
-            <div id="probability-chart">
-                <h3>Prediction Probabilities</h3>
-                <div id="prob-bars">
+            <div id="probability-chart" role="region" aria-labelledby="probability-chart-title">
+                <h3 id="probability-chart-title">Prediction Probabilities</h3>
+                <div id="prob-bars" aria-live="polite">
                     <!-- Probability bars will be populated by JavaScript -->
                 </div>
             </div>
             
             <!-- Feature Explanation Section -->
-            <div id="feature-explanation">
-                <h3>Why This Prediction?</h3>
+            <div id="feature-explanation" role="region" aria-labelledby="feature-explanation-title">
+                <h3 id="feature-explanation-title">Why This Prediction?</h3>
                 <p>The features below had the strongest influence on this classification:</p>
-                <div id="feature-importance-viz">
+                <div id="feature-importance-viz" aria-live="polite">
                     <!-- Feature importance visualization will be populated by JavaScript -->
                 </div>
             </div>
@@ -61,7 +79,7 @@
                 
                 // Make the prediction display more fun with conditional messages
                 // Add a loading animation before showing the result
-                predictionEl.innerHTML = `<div class="loading-animation"></div>`;
+                predictionEl.innerHTML = `<div class="loading-animation"></div><div class="loading-text">Analyzing penguin data</div>`;
                 
                 // Delay the result to show the loading animation
                 setTimeout(() => {
@@ -89,10 +107,25 @@
                 const dataGrid = document.getElementById('data-grid');
                 dataGrid.innerHTML = '';
                 
+                // Tooltips for measurements to provide context
+                const tooltips = {
+                    'bill_length_mm': 'Length of the penguin\'s bill from the tip to the base in millimeters',
+                    'bill_depth_mm': 'Depth/height of the penguin\'s bill in millimeters',
+                    'flipper_length_mm': 'Length of the penguin\'s flipper in millimeters',
+                    'body_mass_g': 'Body mass of the penguin in grams'
+                };
+                
                 for (const [key, value] of Object.entries(data.penguin_data)) {
                     if (key !== 'datetime') {
                         const dataItem = document.createElement('div');
                         dataItem.className = 'data-item';
+                        dataItem.setAttribute('tabindex', '0'); // Make focusable for accessibility
+                        
+                        // Add tooltip if available
+                        if (tooltips[key]) {
+                            dataItem.setAttribute('data-tooltip', tooltips[key]);
+                            dataItem.setAttribute('aria-label', `${formatLabel(key)}: ${formatValue(key, value)}. ${tooltips[key]}`);
+                        }
                         
                         const label = document.createElement('div');
                         label.className = 'data-label';
@@ -118,11 +151,23 @@
                     '2': 'Gentoo'
                 };
                 
+                // Species descriptions for tooltips
+                const speciesDescriptions = {
+                    'Adelie': 'Adelie penguins are known for their tuxedo-like appearance with a blue-black back and white front.',
+                    'Chinstrap': 'Chinstrap penguins have a distinctive thin black line under their chin, resembling a helmet strap.',
+                    'Gentoo': 'Gentoo penguins are recognized by their bright orange-red bill and white patch extending over the top of the head.'
+                };
+                
                 for (const [key, value] of Object.entries(data.probabilities)) {
                     const species = speciesMap[key] || key;
                     
                     const barContainer = document.createElement('div');
                     barContainer.className = 'prob-bar-container';
+                    barContainer.setAttribute('tabindex', '0'); // Make focusable for accessibility
+                    
+                    // Set aria-label for accessibility without tooltip
+                    barContainer.setAttribute('aria-label', `${species} probability: ${Math.round(value * 100)}%`);
+
                     
                     const label = document.createElement('div');
                     label.className = 'data-label';
@@ -204,6 +249,14 @@
                 'bill_depth_mm': 0.11   // Least important feature
             };
             
+            // Feature descriptions for tooltips
+            const featureDescriptions = {
+                'bill_length_mm': 'Bill length is a key distinguishing feature. Gentoo and Chinstrap penguins typically have longer bills than Adelie penguins.',
+                'flipper_length_mm': 'Flipper length helps identify Gentoo penguins, which have significantly longer flippers than other species.',
+                'body_mass_g': 'Body mass is a strong indicator for Gentoo penguins, which are typically heavier than Adelie and Chinstrap penguins.',
+                'bill_depth_mm': 'Bill depth helps distinguish Adelie and Chinstrap (deeper bills) from Gentoo penguins (shallower bills).'
+            };
+            
             // Species typical values (approximate means for each species)
             const speciesTypicalValues = {
                 'Adelie': {
@@ -235,6 +288,12 @@
             for (const feature of sortedFeatures) {
                 const featureContainer = document.createElement('div');
                 featureContainer.className = 'feature-container';
+                featureContainer.setAttribute('tabindex', '0'); // Make focusable for accessibility
+                
+                // Keep aria-label for accessibility but remove tooltip
+                if (featureDescriptions[feature]) {
+                    featureContainer.setAttribute('aria-label', `${formatLabel(feature)}: ${featureDescriptions[feature]}`);
+                }
                 
                 // Feature header with importance indicator
                 const featureHeader = document.createElement('div');
@@ -294,6 +353,38 @@
         
         // Auto-refresh prediction every 30 seconds
         setInterval(fetchPrediction, 30000);
+        
+        // Dark mode toggle functionality
+        const themeToggle = document.getElementById('theme-toggle');
+        
+        // Check for saved theme preference or use preferred color scheme
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+        
+        // Toggle theme when button is clicked
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // Announce theme change for screen readers
+            const announcement = document.createElement('div');
+            announcement.setAttribute('aria-live', 'polite');
+            announcement.classList.add('sr-only');
+            announcement.textContent = `Switched to ${newTheme} mode`;
+            document.body.appendChild(announcement);
+            
+            // Remove announcement after it's been read
+            setTimeout(() => {
+                document.body.removeChild(announcement);
+            }, 1000);
+        });
     </script>
 </body>
 </html>
