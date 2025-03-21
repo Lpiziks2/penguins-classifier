@@ -473,7 +473,7 @@ h1::before {
   border-radius: 30px;
   height: 40px;
   position: relative;
-  overflow: hidden;
+  overflow: visible; /* Changed from hidden to visible to allow percentage to show */
   box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(0, 0, 0, 0.05);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -509,7 +509,7 @@ h1::before {
   );
   animation: barStripes 3s linear infinite;
   position: relative;
-  overflow: hidden;
+  overflow: visible; /* Changed from hidden to visible to allow text to overflow */
 }
 
 .prob-bar::before {
@@ -587,13 +587,23 @@ h1::before {
 /* Probability value styling */
 .prob-value {
   position: absolute;
-  z-index: 2;
+  z-index: 5; /* Increased z-index to ensure it's above all other elements */
   font-size: 1.1rem;
   letter-spacing: 0.5px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
   width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
+  pointer-events: none; /* Prevents the text from interfering with hover effects */
+  color: white; /* Ensure text is visible on all bar colors */
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5); /* Enhanced text shadow for better visibility */
 }
 
 /* Feature Explanation Section */
