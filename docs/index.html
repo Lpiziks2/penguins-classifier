@@ -143,7 +143,13 @@
                     
                     // Add percentage with better formatting
                     const percentage = Math.round(value * 100);
-                    bar.innerHTML = `<span class="prob-value">${percentage}%</span>`;
+                    // Create a separate container for the percentage that spans the entire bar container
+                    const percentageSpan = document.createElement('span');
+                    percentageSpan.className = 'prob-value';
+                    percentageSpan.innerText = `${percentage}%`;
+                    barContainer.appendChild(percentageSpan);
+                    // Keep the bar clean without text inside
+                    bar.innerHTML = '';
                     
                     // Highlight the predicted species
                     if (species === data.predicted_species) {
