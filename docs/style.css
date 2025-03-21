@@ -49,12 +49,15 @@ body::before {
   padding: 35px;
   border-radius: 18px;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-  max-width: 800px;
+  max-width: 1000px;
   width: 90%;
   position: relative;
   overflow: hidden;
   margin: 30px 0;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-gap: 25px;
 }
 
 .container:hover {
@@ -116,15 +119,17 @@ h1::before {
 
 #prediction-box {
   margin: 30px auto;
-  padding: 25px;
+  padding: 30px;
   background-color: var(--light-blue);
-  border-radius: 15px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
   transition: all 0.4s ease;
-  max-width: 500px;
-  border: 1px solid rgba(168, 216, 234, 0.3);
+  max-width: 600px;
+  border: 2px solid rgba(168, 216, 234, 0.5);
   position: relative;
   overflow: hidden;
+  text-align: center;
+  transform: translateY(0);
 }
 
 #prediction-box::before {
@@ -219,26 +224,46 @@ h1::before {
 }
 
 #prediction-box:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  transform: translateY(-10px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+/* Add a subtle glow effect to the prediction box */
+#prediction-box::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  box-shadow: 0 0 25px rgba(168, 216, 234, 0.6);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  z-index: -1;
+}
+
+#prediction-box:hover::after {
+  opacity: 1;
 }
 
 .species {
-  font-size: 28px;
+  font-size: 32px;
   font-weight: bold;
   color: var(--deep-blue);
-  padding: 18px 25px;
-  border-radius: 15px;
+  padding: 22px 30px;
+  border-radius: 18px;
   background-color: var(--penguin-white);
   display: inline-block;
-  margin: 15px 0;
+  margin: 15px auto;
   transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  border-left: 5px solid var(--penguin-orange);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  border-left: 6px solid var(--penguin-orange);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   position: relative;
   overflow: hidden;
   transform-origin: center;
   animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  min-width: 300px;
 }
 
 @keyframes popIn {
@@ -296,12 +321,59 @@ h1::before {
   text-align: center;
 }
 
+/* Styling for the prediction title */
+.prediction-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  text-align: center;
+  margin: 15px 0 5px;
+  position: relative;
+  display: inline-block;
+  padding: 8px 15px;
+  transform: translateY(0);
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+  background: linear-gradient(120deg, rgba(255,154,60,0.15), rgba(52,152,219,0.15), rgba(46,204,113,0.15));
+  border-radius: 8px;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(120deg, var(--penguin-orange), var(--adelie-blue), var(--gentoo-green));
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.prediction-title::before {
+  content: '🔍';
+  margin-right: 8px;
+  display: inline-block;
+  animation: pulse-rotate 2s ease-in-out infinite;
+  text-shadow: none;
+  color: var(--deep-blue);
+}
+
+@keyframes gentle-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes pulse-rotate {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.1) rotate(10deg); }
+}
+
+/* Dashboard Layout */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 25px;
+  margin-top: 25px;
+}
+
 /* Penguin data section */
 #penguin-data {
   background-color: var(--penguin-white);
   border-radius: 12px;
   padding: 20px;
-  margin-top: 25px;
   text-align: left;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
   border: 1px solid rgba(168, 216, 234, 0.2);
@@ -366,13 +438,14 @@ h1::before {
 
 /* Probability visualization */
 #probability-chart {
-  margin-top: 25px;
-  padding: 20px;
+  padding: 25px;
   background-color: var(--penguin-white);
-  border-radius: 12px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(168, 216, 234, 0.2);
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(168, 216, 234, 0.3);
   transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 #probability-chart:hover {
@@ -395,39 +468,59 @@ h1::before {
 }
 
 .prob-bar-container {
-  margin: 15px 0;
+  margin: 20px 0;
   background-color: #f5f5f5;
-  border-radius: 25px;
-  height: 30px;
+  border-radius: 30px;
+  height: 40px;
   position: relative;
   overflow: hidden;
-  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 0, 0, 0.03);
+  box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.prob-bar-container:hover {
+  transform: scale(1.02);
+  box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.12);
 }
 
 .prob-bar {
   height: 100%;
-  border-radius: 25px;
-  transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+  border-radius: 30px;
+  transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding-right: 15px;
+  padding-right: 20px;
   color: white;
   font-weight: bold;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-  background-size: 30px 30px;
+  font-size: 1.1rem;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  background-size: 40px 40px;
   background-image: linear-gradient(
     45deg,
-    rgba(255, 255, 255, 0.15) 25%,
+    rgba(255, 255, 255, 0.2) 25%,
     transparent 25%,
     transparent 50%,
-    rgba(255, 255, 255, 0.15) 50%,
-    rgba(255, 255, 255, 0.15) 75%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.2) 75%,
     transparent 75%,
     transparent
   );
   animation: barStripes 3s linear infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.prob-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(255,255,255,0.1), rgba(255,255,255,0.3));
+  opacity: 0.6;
 }
 
 @keyframes barStripes {
@@ -450,16 +543,65 @@ h1::before {
   box-shadow: 0 3px 5px rgba(46, 204, 113, 0.3);
 }
 
+/* Species indicator styling */
+.species-indicator {
+  display: inline-block;
+  margin-right: 8px;
+  font-size: 1.2em;
+  vertical-align: middle;
+}
+
+.species-indicator.adelie {
+  color: var(--adelie-blue);
+}
+
+.species-indicator.chinstrap {
+  color: var(--chinstrap-purple);
+}
+
+.species-indicator.gentoo {
+  color: var(--gentoo-green);
+}
+
+/* Bar wrapper styling */
+.bar-wrapper {
+  margin-bottom: 25px;
+  transition: transform 0.3s ease;
+}
+
+.bar-wrapper:hover {
+  transform: translateX(5px);
+}
+
+/* Predicted species highlighting */
+.prob-bar-container.predicted {
+  box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.12), 0 0 15px rgba(255, 154, 60, 0.3);
+  transform: scale(1.05);
+}
+
+.predicted-label {
+  font-weight: bold;
+  color: var(--penguin-orange);
+}
+
+/* Probability value styling */
+.prob-value {
+  position: relative;
+  z-index: 2;
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+}
+
 /* Feature Explanation Section */
 #feature-explanation {
   background-color: var(--penguin-white);
   border-radius: 12px;
   padding: 20px;
-  margin-top: 25px;
   text-align: left;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
   border: 1px solid rgba(168, 216, 234, 0.2);
   transition: transform 0.3s ease;
+  grid-column: span 2;
 }
 
 #feature-explanation:hover {
@@ -582,6 +724,16 @@ h1::before {
     padding: 25px;
     width: 95%;
     margin: 15px 0;
+    display: block;
+  }
+  
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    grid-gap: 20px;
+  }
+  
+  #feature-explanation {
+    grid-column: span 1;
   }
   
   h1 {
@@ -603,6 +755,7 @@ h1::before {
   #probability-chart,
   #feature-explanation {
     padding: 15px;
+    margin-top: 20px;
   }
   
   .prob-bar-container {
