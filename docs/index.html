@@ -10,7 +10,7 @@
 <body>
     <div class="container">
         <h1>Penguins of Madagascar Classifier</h1>
-        <p>Latest Penguin Species Prediction:</p>
+        <p class="prediction-title">Latest Penguin Species Prediction:</p>
         
         <div id="prediction-box">
             <div id="prediction" class="species loading">Loading...</div>
@@ -18,28 +18,31 @@
         
         <p class="timestamp" id="timestamp"></p>
         
-        <!-- Penguin Data Section -->
-        <div id="penguin-data">
-            <h3>Penguin Measurements</h3>
-            <div class="data-grid" id="data-grid">
-                <!-- Data will be populated by JavaScript -->
+        <!-- Dashboard Grid Layout -->
+        <div class="dashboard-grid">
+            <!-- Penguin Data Section -->
+            <div id="penguin-data">
+                <h3>Penguin Measurements</h3>
+                <div class="data-grid" id="data-grid">
+                    <!-- Data will be populated by JavaScript -->
+                </div>
             </div>
-        </div>
-        
-        <!-- Probability Chart Section -->
-        <div id="probability-chart">
-            <h3>Prediction Probabilities</h3>
-            <div id="prob-bars">
-                <!-- Probability bars will be populated by JavaScript -->
+            
+            <!-- Probability Chart Section -->
+            <div id="probability-chart">
+                <h3>Prediction Probabilities</h3>
+                <div id="prob-bars">
+                    <!-- Probability bars will be populated by JavaScript -->
+                </div>
             </div>
-        </div>
-        
-        <!-- Feature Explanation Section -->
-        <div id="feature-explanation">
-            <h3>Why This Prediction?</h3>
-            <p>The features below had the strongest influence on this classification:</p>
-            <div id="feature-importance-viz">
-                <!-- Feature importance visualization will be populated by JavaScript -->
+            
+            <!-- Feature Explanation Section -->
+            <div id="feature-explanation">
+                <h3>Why This Prediction?</h3>
+                <p>The features below had the strongest influence on this classification:</p>
+                <div id="feature-importance-viz">
+                    <!-- Feature importance visualization will be populated by JavaScript -->
+                </div>
             </div>
         </div>
     </div>
@@ -66,10 +69,10 @@
                         predictionEl.innerHTML = `<div class="species-icon adelie">🐧</div> <strong>Adelie Penguin Found!</strong> <div class="species-tagline">Skipper, is that you? 🎖️</div>`;
                         predictionEl.className = 'species adelie';
                     } else if (data.predicted_species === 'Chinstrap') {
-                        predictionEl.innerHTML = `<div class="species-icon chinstrap">🐧</div> <strong>Chinstrap Penguin Detected!</strong> <div class="species-tagline">Rico, what's that explosive device? 💣</div>`;
+                        predictionEl.innerHTML = `<div class="species-icon chinstrap">🐧</div> <strong>Chinstrap Penguin Detected!</strong> <div class="species-tagline">Kowalski, analysis! Not our target.</div>`;
                         predictionEl.className = 'species chinstrap';
                     } else if (data.predicted_species === 'Gentoo') {
-                        predictionEl.innerHTML = `<div class="species-icon gentoo">🐧</div> <strong>Gentoo Penguin Spotted!</strong>`;
+                        predictionEl.innerHTML = `<div class="species-icon gentoo">🐧</div> <strong>Gentoo Penguin Spotted!</strong> <div class="species-tagline">Private, log this one! Mission continues.</div>`;
                         predictionEl.className = 'species gentoo';
                     } else {
                         predictionEl.innerHTML = `<div class="species-icon">🐧</div> <strong>Species: ${data.predicted_species}</strong>`;
@@ -123,16 +126,35 @@
                     
                     const label = document.createElement('div');
                     label.className = 'data-label';
-                    label.innerText = species;
+                    
+                    // No species icon for cleaner look
+                    const speciesIcon = document.createElement('span');
+                    speciesIcon.className = `species-indicator ${species.toLowerCase()}`;
+                    // Removed emoji for cleaner presentation
+                    label.appendChild(speciesIcon);
+                    
+                    const speciesText = document.createElement('span');
+                    speciesText.innerText = species;
+                    label.appendChild(speciesText);
                     
                     const bar = document.createElement('div');
                     bar.className = `prob-bar prob-${species.toLowerCase()}`;
                     bar.style.width = `${value * 100}%`;
-                    bar.innerText = `${Math.round(value * 100)}%`;
+                    
+                    // Add percentage with better formatting
+                    const percentage = Math.round(value * 100);
+                    bar.innerHTML = `<span class="prob-value">${percentage}%</span>`;
+                    
+                    // Highlight the predicted species
+                    if (species === data.predicted_species) {
+                        barContainer.classList.add('predicted');
+                        label.classList.add('predicted-label');
+                    }
                     
                     barContainer.appendChild(bar);
                     
                     const barWrapper = document.createElement('div');
+                    barWrapper.className = 'bar-wrapper';
                     barWrapper.appendChild(label);
                     barWrapper.appendChild(barContainer);
                     
