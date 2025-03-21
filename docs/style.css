@@ -1,294 +1,801 @@
+/* Antarctic-themed color palette */
+:root {
+  --ice-blue: #a8d8ea;
+  --deep-blue: #2a4d69;
+  --light-blue: #e8f4f8;
+  --penguin-black: #333333;
+  --penguin-white: #ffffff;
+  --penguin-orange: #ff9a3c;
+  --snow-white: #f9f9f9;
+  --gentoo-green: #2ecc71;
+  --adelie-blue: #3498db;
+  --chinstrap-purple: #9b59b6;
+  --glacier-blue: #cae8f2;
+}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Penguin Prediction</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-</head>
-<body>
-    <div class="container">
-        <h1>Penguins of Madagascar Classifier</h1>
-        <p class="prediction-title">Latest Penguin Species Prediction:</p>
-        
-        <div id="prediction-box">
-            <div id="prediction" class="species loading">Loading...</div>
-        </div>
-        
-        <p class="timestamp" id="timestamp"></p>
-        
-        <!-- Dashboard Grid Layout -->
-        <div class="dashboard-grid">
-            <!-- Penguin Data Section -->
-            <div id="penguin-data">
-                <h3>Penguin Measurements</h3>
-                <div class="data-grid" id="data-grid">
-                    <!-- Data will be populated by JavaScript -->
-                </div>
-            </div>
-            
-            <!-- Probability Chart Section -->
-            <div id="probability-chart">
-                <h3>Prediction Probabilities</h3>
-                <div id="prob-bars">
-                    <!-- Probability bars will be populated by JavaScript -->
-                </div>
-            </div>
-            
-            <!-- Feature Explanation Section -->
-            <div id="feature-explanation">
-                <h3>Why This Prediction?</h3>
-                <p>The features below had the strongest influence on this classification:</p>
-                <div id="feature-importance-viz">
-                    <!-- Feature importance visualization will be populated by JavaScript -->
-                </div>
-            </div>
-        </div>
-    </div>
+body {
+  font-family: 'Montserrat', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, var(--ice-blue), var(--glacier-blue));
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-attachment: fixed;
+  position: relative;
+  overflow-x: hidden;
+}
 
-    <script>
-        async function fetchPrediction() {
-            try {
-                const response = await fetch('latest_prediction.json');
-                if (!response.ok) {
-                    throw new Error("Failed to fetch prediction.");
-                }
-                const data = await response.json();
-                
-                // Update prediction and remove loading class
-                const predictionEl = document.getElementById('prediction');
-                
-                // Make the prediction display more fun with conditional messages
-                // Add a loading animation before showing the result
-                predictionEl.innerHTML = `<div class="loading-animation"></div>`;
-                
-                // Delay the result to show the loading animation
-                setTimeout(() => {
-                    if (data.predicted_species === 'Adelie') {
-                        predictionEl.innerHTML = `<div class="species-icon adelie">🐧</div> <strong>Adelie Penguin Found!</strong> <div class="species-tagline">Skipper, is that you? 🎖️</div>`;
-                        predictionEl.className = 'species adelie';
-                    } else if (data.predicted_species === 'Chinstrap') {
-                        predictionEl.innerHTML = `<div class="species-icon chinstrap">🐧</div> <strong>Chinstrap Penguin Detected!</strong> <div class="species-tagline">Kowalski, analysis! Not our target.</div>`;
-                        predictionEl.className = 'species chinstrap';
-                    } else if (data.predicted_species === 'Gentoo') {
-                        predictionEl.innerHTML = `<div class="species-icon gentoo">🐧</div> <strong>Gentoo Penguin Spotted!</strong> <div class="species-tagline">Private, log this one! Mission continues.</div>`;
-                        predictionEl.className = 'species gentoo';
-                    } else {
-                        predictionEl.innerHTML = `<div class="species-icon">🐧</div> <strong>Species: ${data.predicted_species}</strong>`;
-                        predictionEl.className = 'species';
-                    }
-                    // Remove loading class after content is updated
-                    predictionEl.classList.remove('loading');
-                }, 800);
-                
-                // Update timestamp
-                document.getElementById('timestamp').innerText = `Last updated: ${data.timestamp}`;
-                
-                // Update penguin data
-                const dataGrid = document.getElementById('data-grid');
-                dataGrid.innerHTML = '';
-                
-                for (const [key, value] of Object.entries(data.penguin_data)) {
-                    if (key !== 'datetime') {
-                        const dataItem = document.createElement('div');
-                        dataItem.className = 'data-item';
-                        
-                        const label = document.createElement('div');
-                        label.className = 'data-label';
-                        label.innerText = formatLabel(key);
-                        
-                        const dataValue = document.createElement('div');
-                        dataValue.className = 'data-value';
-                        dataValue.innerText = formatValue(key, value);
-                        
-                        dataItem.appendChild(label);
-                        dataItem.appendChild(dataValue);
-                        dataGrid.appendChild(dataItem);
-                    }
-                }
-                
-                // Update probability bars
-                const probBars = document.getElementById('prob-bars');
-                probBars.innerHTML = '';
-                
-                const speciesMap = {
-                    '0': 'Adelie',
-                    '1': 'Chinstrap',
-                    '2': 'Gentoo'
-                };
-                
-                for (const [key, value] of Object.entries(data.probabilities)) {
-                    const species = speciesMap[key] || key;
-                    
-                    const barContainer = document.createElement('div');
-                    barContainer.className = 'prob-bar-container';
-                    
-                    const label = document.createElement('div');
-                    label.className = 'data-label';
-                    
-                    // No species icon for cleaner look
-                    const speciesIcon = document.createElement('span');
-                    speciesIcon.className = `species-indicator ${species.toLowerCase()}`;
-                    // Removed emoji for cleaner presentation
-                    label.appendChild(speciesIcon);
-                    
-                    const speciesText = document.createElement('span');
-                    speciesText.innerText = species;
-                    label.appendChild(speciesText);
-                    
-                    const bar = document.createElement('div');
-                    bar.className = `prob-bar prob-${species.toLowerCase()}`;
-                    bar.style.width = `${value * 100}%`;
-                    
-                    // Add percentage with better formatting
-                    const percentage = Math.round(value * 100);
-                    bar.innerHTML = `<span class="prob-value">${percentage}%</span>`;
-                    
-                    // Highlight the predicted species
-                    if (species === data.predicted_species) {
-                        barContainer.classList.add('predicted');
-                        label.classList.add('predicted-label');
-                    }
-                    
-                    barContainer.appendChild(bar);
-                    
-                    const barWrapper = document.createElement('div');
-                    barWrapper.className = 'bar-wrapper';
-                    barWrapper.appendChild(label);
-                    barWrapper.appendChild(barContainer);
-                    
-                    probBars.appendChild(barWrapper);
-                }
-                
-                // Update feature importance visualization
-                updateFeatureImportance(data);
-                
-            } catch (error) {
-                document.getElementById('prediction').innerText = 'Error loading prediction.';
-                document.getElementById('timestamp').innerText = '';
-            }
-        }
-        
-        function formatLabel(key) {
-            return key.split('_').map(word => 
-                word.charAt(0).toUpperCase() + word.slice(1)
-            ).join(' ');
-        }
-        
-        function formatValue(key, value) {
-            if (key.includes('mm')) {
-                return `${value.toFixed(1)} mm`;
-            } else if (key.includes('g')) {
-                return `${value.toFixed(0)} g`;
-            }
-            return value;
-        }
-        
-        function updateFeatureImportance(data) {
-            const featureImportanceViz = document.getElementById('feature-importance-viz');
-            featureImportanceViz.innerHTML = '';
-            
-            // Feature importance values (based on model analysis)
-            // These values represent the relative importance of each feature in the model
-            const featureImportance = {
-                'bill_length_mm': 0.35,  // Most important feature
-                'flipper_length_mm': 0.32,
-                'body_mass_g': 0.22,
-                'bill_depth_mm': 0.11   // Least important feature
-            };
-            
-            // Species typical values (approximate means for each species)
-            const speciesTypicalValues = {
-                'Adelie': {
-                    'bill_length_mm': 38.8,
-                    'bill_depth_mm': 18.3,
-                    'flipper_length_mm': 190.0,
-                    'body_mass_g': 3700
-                },
-                'Chinstrap': {
-                    'bill_length_mm': 48.8,
-                    'bill_depth_mm': 18.4,
-                    'flipper_length_mm': 195.8,
-                    'body_mass_g': 3700
-                },
-                'Gentoo': {
-                    'bill_length_mm': 47.5,
-                    'bill_depth_mm': 15.0,
-                    'flipper_length_mm': 217.0,
-                    'body_mass_g': 5100
-                }
-            };
-            
-            // Sort features by importance
-            const sortedFeatures = Object.entries(featureImportance)
-                .sort((a, b) => b[1] - a[1])
-                .map(entry => entry[0]);
-            
-            // Create feature importance visualization
-            for (const feature of sortedFeatures) {
-                const featureContainer = document.createElement('div');
-                featureContainer.className = 'feature-container';
-                
-                // Feature header with importance indicator
-                const featureHeader = document.createElement('div');
-                featureHeader.className = 'feature-header';
-                
-                const featureLabel = document.createElement('div');
-                featureLabel.className = 'feature-label';
-                featureLabel.innerText = formatLabel(feature);
-                
-                const importanceIndicator = document.createElement('div');
-                importanceIndicator.className = 'importance-indicator';
-                importanceIndicator.style.width = `${featureImportance[feature] * 100}%`;
-                importanceIndicator.innerText = `${Math.round(featureImportance[feature] * 100)}%`;
-                
-                featureHeader.appendChild(featureLabel);
-                featureHeader.appendChild(importanceIndicator);
-                
-                // Feature comparison visualization
-                const comparisonViz = document.createElement('div');
-                comparisonViz.className = 'feature-comparison';
-                
-                // Current penguin value
-                const currentValue = data.penguin_data[feature];
-                const currentValueEl = document.createElement('div');
-                currentValueEl.className = 'current-value';
-                currentValueEl.innerText = `Current: ${formatValue(feature, currentValue)}`;
-                
-                // Species comparison
-                const speciesComparison = document.createElement('div');
-                speciesComparison.className = 'species-comparison';
-                
-                for (const [species, values] of Object.entries(speciesTypicalValues)) {
-                    const speciesValue = values[feature];
-                    const speciesValueEl = document.createElement('div');
-                    speciesValueEl.className = `species-value ${species.toLowerCase()}`;
-                    speciesValueEl.innerText = `${species}: ${formatValue(feature, speciesValue)}`;
-                    
-                    // Highlight the species that matches the prediction
-                    if (species === data.predicted_species) {
-                        speciesValueEl.classList.add('predicted');
-                    }
-                    
-                    speciesComparison.appendChild(speciesValueEl);
-                }
-                
-                comparisonViz.appendChild(currentValueEl);
-                comparisonViz.appendChild(speciesComparison);
-                
-                featureContainer.appendChild(featureHeader);
-                featureContainer.appendChild(comparisonViz);
-                
-                featureImportanceViz.appendChild(featureContainer);
-            }
-        }
+/* Decorative elements */
+body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.3) 5px, transparent 6px),
+                    radial-gradient(circle at 30% 70%, rgba(255, 255, 255, 0.3) 4px, transparent 5px),
+                    radial-gradient(circle at 70% 40%, rgba(255, 255, 255, 0.3) 6px, transparent 7px),
+                    radial-gradient(circle at 90% 90%, rgba(255, 255, 255, 0.3) 5px, transparent 6px);
+  background-size: 250px 250px;
+  z-index: -1;
+  opacity: 0.6;
+}
 
-        fetchPrediction();
-        
-        // Auto-refresh prediction every 30 seconds
-        setInterval(fetchPrediction, 30000);
-    </script>
-</body>
-</html>
+.container {
+  background: var(--snow-white);
+  padding: 35px;
+  border-radius: 18px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+  max-width: 1000px;
+  width: 90%;
+  position: relative;
+  overflow: hidden;
+  margin: 30px 0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-gap: 25px;
+}
+
+.container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+}
+
+.container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  background: linear-gradient(90deg, var(--deep-blue), var(--ice-blue), var(--penguin-orange));
+  animation: gradientShift 8s infinite alternate;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+h1 {
+  color: var(--deep-blue);
+  font-size: 2.5rem;
+  margin-bottom: 25px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+  position: relative;
+  display: inline-block;
+  padding-bottom: 10px;
+}
+
+h1::after {
+  content: '🐧';
+  font-size: 1.8rem;
+  margin-left: 10px;
+  vertical-align: middle;
+  animation: waddle 3s ease-in-out infinite;
+  display: inline-block;
+}
+
+@keyframes waddle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(10deg) translateY(-3px); }
+  75% { transform: rotate(-10deg) translateY(-3px); }
+}
+
+h1::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 80%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--penguin-orange), transparent);
+  border-radius: 3px;
+}
+
+#prediction-box {
+  margin: 30px auto;
+  padding: 30px;
+  background-color: var(--light-blue);
+  border-radius: 20px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  transition: all 0.4s ease;
+  max-width: 600px;
+  border: 2px solid rgba(168, 216, 234, 0.5);
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  transform: translateY(0);
+}
+
+#prediction-box::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 100px;
+  height: 100px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  filter: blur(20px);
+  z-index: 0;
+  animation: floatBubble 8s infinite ease-in-out;
+}
+
+@keyframes floatBubble {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-30px, 30px); }
+}
+
+.loading-animation {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  border: 5px solid var(--ice-blue);
+  border-radius: 50%;
+  border-top-color: var(--penguin-orange);
+  animation: spin 1s ease-in-out infinite;
+  margin: 10px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.species-icon {
+  font-size: 2em;
+  display: inline-block;
+  margin-right: 10px;
+  animation: bounce 2s infinite ease-in-out;
+  vertical-align: middle;
+}
+
+.species-tagline {
+  display: block;
+  font-size: 0.7em;
+  margin-top: 8px;
+  font-style: italic;
+  color: #666;
+  animation: fadeIn 1s ease-in-out forwards;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Species-specific icon animations */
+.species-icon.adelie {
+  animation: adelieBounce 2s infinite ease-in-out;
+}
+
+.species-icon.chinstrap {
+  animation: chinStrapSpin 3s infinite ease-in-out;
+}
+
+.species-icon.gentoo {
+  animation: gentooWave 2.5s infinite ease-in-out;
+}
+
+@keyframes adelieBounce {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  30% { transform: translateY(-15px) rotate(-10deg); }
+  60% { transform: translateY(0) rotate(10deg); }
+}
+
+@keyframes chinStrapSpin {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px) rotate(15deg); }
+}
+
+@keyframes gentooWave {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-5px) rotate(15deg); }
+  75% { transform: translateY(-5px) rotate(-15deg); }
+}
+
+#prediction-box:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+/* Add a subtle glow effect to the prediction box */
+#prediction-box::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  box-shadow: 0 0 25px rgba(168, 216, 234, 0.6);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  z-index: -1;
+}
+
+#prediction-box:hover::after {
+  opacity: 1;
+}
+
+.species {
+  font-size: 32px;
+  font-weight: bold;
+  color: var(--deep-blue);
+  padding: 22px 30px;
+  border-radius: 18px;
+  background-color: var(--penguin-white);
+  display: inline-block;
+  margin: 15px auto;
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border-left: 6px solid var(--penguin-orange);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: hidden;
+  transform-origin: center;
+  animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  min-width: 300px;
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.species::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 50%);
+  z-index: 1;
+}
+
+.species strong {
+  position: relative;
+  z-index: 2;
+}
+
+/* Species-specific styling */
+.species:has(strong:contains('Adelie')) {
+  border-left: 5px solid var(--adelie-blue);
+  box-shadow: 0 8px 20px rgba(52, 152, 219, 0.2);
+  animation: adelieWiggle 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.species:has(strong:contains('Chinstrap')) {
+  border-left: 5px solid var(--chinstrap-purple);
+  box-shadow: 0 8px 20px rgba(155, 89, 182, 0.2);
+}
+
+.species:has(strong:contains('Gentoo')) {
+  border-left: 5px solid var(--gentoo-green);
+  box-shadow: 0 8px 20px rgba(46, 204, 113, 0.2);
+}
+
+@keyframes adelieWiggle {
+  0% { transform: scale(0.8); opacity: 0; }
+  40% { transform: scale(1.05) rotate(2deg); }
+  60% { transform: scale(1.05) rotate(-2deg); }
+  80% { transform: scale(1.05) rotate(1deg); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.timestamp {
+  font-size: 14px;
+  color: #777;
+  margin-top: 15px;
+  font-style: italic;
+  text-align: center;
+}
+
+/* Styling for the prediction title */
+.prediction-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  text-align: center;
+  margin: 15px 0 5px;
+  position: relative;
+  display: inline-block;
+  padding: 8px 15px;
+  transform: translateY(0);
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+  background: linear-gradient(120deg, rgba(255,154,60,0.15), rgba(52,152,219,0.15), rgba(46,204,113,0.15));
+  border-radius: 8px;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(120deg, var(--penguin-orange), var(--adelie-blue), var(--gentoo-green));
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.prediction-title::before {
+  content: '🔍';
+  margin-right: 8px;
+  display: inline-block;
+  animation: pulse-rotate 2s ease-in-out infinite;
+  text-shadow: none;
+  color: var(--deep-blue);
+}
+
+@keyframes gentle-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes pulse-rotate {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.1) rotate(10deg); }
+}
+
+/* Dashboard Layout */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 25px;
+  margin-top: 25px;
+}
+
+/* Penguin data section */
+#penguin-data {
+  background-color: var(--penguin-white);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: left;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(168, 216, 234, 0.2);
+  transition: transform 0.3s ease;
+}
+
+#penguin-data:hover {
+  transform: translateY(-5px);
+}
+
+#penguin-data h3 {
+  color: var(--deep-blue);
+  margin-top: 0;
+  border-bottom: 2px solid var(--ice-blue);
+  padding-bottom: 10px;
+  position: relative;
+  display: inline-block;
+}
+
+#penguin-data h3::after {
+  content: '📏';
+  margin-left: 8px;
+  font-size: 0.9em;
+}
+
+.data-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+  margin-top: 20px;
+}
+
+.data-item {
+  background-color: var(--light-blue);
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.03);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(168, 216, 234, 0.2);
+}
+
+.data-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.08);
+  background-color: #f0f9fd;
+}
+
+.data-label {
+  font-weight: bold;
+  color: var(--deep-blue);
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+  border-left: 3px solid var(--penguin-orange);
+  padding-left: 8px;
+}
+
+.data-value {
+  font-size: 1.2rem;
+  color: var(--penguin-black);
+  padding: 5px 0;
+}
+
+/* Probability visualization */
+#probability-chart {
+  padding: 25px;
+  background-color: var(--penguin-white);
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(168, 216, 234, 0.3);
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+#probability-chart:hover {
+  transform: translateY(-5px);
+}
+
+#probability-chart h3 {
+  color: var(--deep-blue);
+  margin-top: 0;
+  border-bottom: 2px solid var(--ice-blue);
+  padding-bottom: 10px;
+  position: relative;
+  display: inline-block;
+}
+
+#probability-chart h3::after {
+  content: '📊';
+  margin-left: 8px;
+  font-size: 0.9em;
+}
+
+.prob-bar-container {
+  margin: 20px 0;
+  background-color: #f5f5f5;
+  border-radius: 30px;
+  height: 40px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.prob-bar-container:hover {
+  transform: scale(1.02);
+  box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.12);
+}
+
+.prob-bar {
+  height: 100%;
+  border-radius: 30px;
+  transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  color: white;
+  font-weight: bold;
+  font-size: 1.1rem;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  background-size: 40px 40px;
+  background-image: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.2) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.2) 75%,
+    transparent 75%,
+    transparent
+  );
+  animation: barStripes 3s linear infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.prob-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(255,255,255,0.1), rgba(255,255,255,0.3));
+  opacity: 0.6;
+}
+
+@keyframes barStripes {
+  from { background-position: 0 0; }
+  to { background-position: 60px 0; }
+}
+
+.prob-adelie { 
+  background-color: var(--adelie-blue); 
+  box-shadow: 0 3px 5px rgba(52, 152, 219, 0.3);
+}
+
+.prob-chinstrap { 
+  background-color: var(--chinstrap-purple); 
+  box-shadow: 0 3px 5px rgba(155, 89, 182, 0.3);
+}
+
+.prob-gentoo { 
+  background-color: var(--gentoo-green); 
+  box-shadow: 0 3px 5px rgba(46, 204, 113, 0.3);
+}
+
+/* Species indicator styling */
+.species-indicator {
+  display: inline-block;
+  margin-right: 8px;
+  font-size: 1.2em;
+  vertical-align: middle;
+}
+
+.species-indicator.adelie {
+  color: var(--adelie-blue);
+}
+
+.species-indicator.chinstrap {
+  color: var(--chinstrap-purple);
+}
+
+.species-indicator.gentoo {
+  color: var(--gentoo-green);
+}
+
+/* Bar wrapper styling */
+.bar-wrapper {
+  margin-bottom: 25px;
+  transition: transform 0.3s ease;
+}
+
+.bar-wrapper:hover {
+  transform: translateX(5px);
+}
+
+/* Predicted species highlighting */
+.prob-bar-container.predicted {
+  box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.12), 0 0 15px rgba(255, 154, 60, 0.3);
+  transform: scale(1.05);
+}
+
+.predicted-label {
+  font-weight: bold;
+  color: var(--penguin-orange);
+}
+
+/* Probability value styling */
+.prob-value {
+  position: absolute;
+  z-index: 2;
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  text-align: center;
+}
+
+/* Feature Explanation Section */
+#feature-explanation {
+  background-color: var(--penguin-white);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: left;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(168, 216, 234, 0.2);
+  transition: transform 0.3s ease;
+  grid-column: span 2;
+}
+
+#feature-explanation:hover {
+  transform: translateY(-5px);
+}
+
+#feature-explanation h3 {
+  color: var(--deep-blue);
+  margin-top: 0;
+  border-bottom: 2px solid var(--ice-blue);
+  padding-bottom: 10px;
+  position: relative;
+  display: inline-block;
+}
+
+#feature-explanation h3::after {
+  content: '🔍';
+  margin-left: 8px;
+  font-size: 0.9em;
+}
+
+.feature-container {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: var(--light-blue);
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.03);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(168, 216, 234, 0.2);
+}
+
+.feature-container:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.08);
+  background-color: #f0f9fd;
+}
+
+.feature-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.feature-label {
+  font-weight: bold;
+  color: var(--deep-blue);
+  font-size: 1.1rem;
+}
+
+.importance-indicator {
+  height: 20px;
+  background: linear-gradient(90deg, var(--penguin-orange), var(--ice-blue));
+  border-radius: 10px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  color: white;
+  font-weight: bold;
+  font-size: 0.8rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  min-width: 40px;
+  max-width: 100px;
+}
+
+.feature-comparison {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.current-value {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--penguin-black);
+  padding: 8px 12px;
+  background-color: var(--penguin-white);
+  border-radius: 8px;
+  border-left: 4px solid var(--penguin-orange);
+}
+
+.species-comparison {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.species-value {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.species-value.adelie {
+  background-color: rgba(52, 152, 219, 0.1);
+  border-left: 3px solid var(--adelie-blue);
+}
+
+.species-value.chinstrap {
+  background-color: rgba(155, 89, 182, 0.1);
+  border-left: 3px solid var(--chinstrap-purple);
+}
+
+.species-value.gentoo {
+  background-color: rgba(46, 204, 113, 0.1);
+  border-left: 3px solid var(--gentoo-green);
+}
+
+.species-value.predicted {
+  font-weight: bold;
+  transform: scale(1.05);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .container {
+    padding: 25px;
+    width: 95%;
+    margin: 15px 0;
+    display: block;
+  }
+  
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    grid-gap: 20px;
+  }
+  
+  #feature-explanation {
+    grid-column: span 1;
+  }
+  
+  h1 {
+    font-size: 1.8rem;
+  }
+  
+  .species {
+    font-size: 22px;
+    padding: 12px;
+  }
+  
+  .data-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  #prediction-box,
+  #penguin-data,
+  #probability-chart,
+  #feature-explanation {
+    padding: 15px;
+    margin-top: 20px;
+  }
+  
+  .prob-bar-container {
+    height: 25px;
+  }
+  
+  .species-comparison {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 20px;
+  }
+  
+  h1 {
+    font-size: 1.5rem;
+  }
+  
+  .species {
+    font-size: 18px;
+    padding: 10px;
+  }
+}
+
+/* Animation for loading state */
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+.loading {
+  animation: pulse 1.5s infinite;
+  background-color: #f0f0f0;
+  color: #888;
+  border-left-color: #ccc;
+}
