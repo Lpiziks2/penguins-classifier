@@ -182,5 +182,22 @@
       "datetime": "2025-03-23T07:59:00+00:00"
     },
     "timestamp": "2025-03-23 06:44:25"
+  },
+  {
+    "predicted_species_id": 1,
+    "predicted_species": "Chinstrap",
+    "probabilities": {
+      "0": 0.29,
+      "1": 0.5,
+      "2": 0.21
+    },
+    "penguin_data": {
+      "bill_length_mm": 42.589171842727794,
+      "bill_depth_mm": 16.153400750139337,
+      "flipper_length_mm": 179.69861861784906,
+      "body_mass_g": 3864.4108543520533,
+      "datetime": "2025-03-24T07:59:00+00:00"
+    },
+    "timestamp": "2025-03-24 06:48:07"
   }
 ]
