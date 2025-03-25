@@ -3,7 +3,7 @@ import time
 import subprocess
 
 def run_prediction():
-    subprocess.run(["python", "/app/scripts/scripts/04_prediction_service.py"])
+    subprocess.run(["python", "/app/scripts/04_prediction_service.py"])
 
 # Schedule the task to run every day at specific times
 schedule.every().day.at("07:30").do(run_prediction)
