@@ -2,16 +2,16 @@
   "predicted_species_id": 0,
   "predicted_species": "Adelie",
   "probabilities": {
-    "0": 0.98,
-    "1": 0.02,
-    "2": 0.0
+    "0": 0.53,
+    "1": 0.43,
+    "2": 0.04
   },
   "penguin_data": {
-    "bill_length_mm": 41.786808010928105,
-    "bill_depth_mm": 18.36205452809839,
-    "flipper_length_mm": 185.80738596577768,
-    "body_mass_g": 3534.640700219048,
-    "datetime": "2025-03-26T07:59:00+00:00"
+    "bill_length_mm": 45.687098989175226,
+    "bill_depth_mm": 17.81369500094816,
+    "flipper_length_mm": 185.3148608425986,
+    "body_mass_g": 4554.993173705314,
+    "datetime": "2025-03-27T07:59:00+00:00"
   },
-  "timestamp": "2025-03-26 06:47:12"
+  "timestamp": "2025-03-27 06:48:09"
 }
