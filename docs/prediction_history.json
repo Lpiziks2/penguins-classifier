@@ -369,5 +369,22 @@
       "datetime": "2025-04-03T07:59:00+00:00"
     },
     "timestamp": "2025-04-03 06:47:50"
+  },
+  {
+    "predicted_species_id": 0,
+    "predicted_species": "Adelie",
+    "probabilities": {
+      "0": 1.0,
+      "1": 0.0,
+      "2": 0.0
+    },
+    "penguin_data": {
+      "bill_length_mm": 31.967078415533656,
+      "bill_depth_mm": 19.525174734730875,
+      "flipper_length_mm": 197.33454157533185,
+      "body_mass_g": 4712.710436355916,
+      "datetime": "2025-04-04T07:59:00+00:00"
+    },
+    "timestamp": "2025-04-04 06:47:42"
   }
 ]
